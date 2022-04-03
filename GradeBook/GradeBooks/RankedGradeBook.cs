@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace GradeBook.GradeBooks
@@ -12,71 +13,23 @@ namespace GradeBook.GradeBooks
         }
         public override char GetLetterGrade(double averageGrade)
         {
-            int[] myArray = new int[100];
-            Random random = new Random();
-
-            for (int i = 0; i < myArray.Length; i++)
+            if (Students.Count < 5)
             {
-                myArray[i] = random.Next(1,100);
+                throw new InvalidOperationException("You must have at least 5 students to do ranked grading.");
             }
 
-            int countOfGrades = (int)(myArray.Length * 0.2);
-            if(countOfGrades < 5)
-            {
-                // InvalidOperationException;
-            }
+            var Calc = (int)Math.Ceiling(Students.Count * 0.2);
+            var grades = Students.OrderByDescending(e => e.AverageGrade).Select(e => e.AverageGrade).ToList();
 
-            int[] newArray = new int[countOfGrades];
-            int[] mainArray = new int[countOfGrades * 5];
-
-            try 
-            {
-                for (int i = 0; i < countOfGrades * 5; i++)
-                {
-                    mainArray[i] = myArray[i];
-                }
-            }
-            catch(Exception exp)
-            {
-
-            }
-
-
-            int counter = 0;
-            for (int i = 0; i < mainArray.Length; i++)
-            {
-                if (mainArray[i] > averageGrade)
-                {
-                    counter++;
-                }
-            }
-
-            int gradeA = (int)(myArray.Length * 0.2);
-            int gradeB = (int)(myArray.Length * 0.4);
-            int gradeC = (int)(myArray.Length * 0.6);
-            int gradeD = (int)(myArray.Length * 0.8);
-
-            char grade;
-            if (counter <= gradeA)
-            {
-                return grade = 'A';
-            }
-            else if (counter <= gradeB)
-            {
-                return grade = 'B';
-            }
-            else if (counter <= gradeC)
-            {
-                return grade = 'C';
-            }
-            else if (counter <= gradeD)
-            {
-                return grade = 'D';
-            }
-            else
-            {
-                return grade = 'F';
-            }
+            if (averageGrade >= grades[Calc - 1])
+                return 'A';
+            if (averageGrade >= grades[(Calc * 2) - 1])
+                return 'B';
+            if (averageGrade >= grades[(Calc * 3) - 1])
+                return 'C';
+            if (averageGrade >= grades[(Calc * 4) - 1])
+                return 'D';
+            return 'F';
         }
     }
 }
